@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+:root {
+  --canvas: #eef1e4;
+  --canvas-dim: #e4e8d8;
+  --ink: #161d10;
+  --ink-soft: #3a4530;
+  --moss: #415a24;
+  --moss-deep: #2b3b18;
+  --amber: #d97b29;
+  --amber-deep: #b8621c;
+  --chalk: #fbfaf5;
+  --line: rgba(22, 29, 16, 0.14);
+  --red: #b23a2f;
+  --green: #5c8a3a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+a {
+  color: inherit;
+}
+
+.lg-display {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+.lg-mono {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  letter-spacing: 0.06em;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* ---- terrain texture ---- */
+.lg-terrain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    repeating-radial-gradient(circle at 18% 30%, transparent 0, transparent 38px, var(--line) 39px, transparent 40px),
+    repeating-radial-gradient(circle at 85% 70%, transparent 0, transparent 54px, var(--line) 55px, transparent 56px);
+}
+
+/* ---- roster demo ---- */
+.rd-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.rd-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: var(--chalk);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.rd-cell .rd-fill {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rd-cell.is-anim .rd-fill {
+    animation: rd-sweep 0.5s ease forwards;
+    animation-delay: var(--rd-delay, 0s);
+  }
+  .rd-cell.is-anim .rd-code {
+    animation: rd-pop 0.3s ease forwards;
+    animation-delay: calc(var(--rd-delay, 0s) + 0.35s);
+  }
+}
+
+.rd-cell:not(.is-anim) .rd-fill {
+  transform: scaleX(1);
+}
+
+.rd-cell .rd-code {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--chalk);
+  opacity: 0;
+}
+
+.rd-cell:not(.is-anim) .rd-code {
+  opacity: 1;
+}
+
+@keyframes rd-sweep {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes rd-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ---- ticker ---- */
+.lg-ticker-track {
+  display: flex;
+  width: max-content;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lg-ticker-track {
+    animation: lg-ticker 26s linear infinite;
+  }
+  .lg-ticker-wrap:hover .lg-ticker-track {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes lg-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ---- reveal on scroll ---- */
+.lg-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.lg-reveal.is-visible {
+  animation: lg-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lg-reveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- interactions ---- */
+.lg-card {
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.lg-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--moss);
+  box-shadow: 0 12px 24px -12px rgba(22, 29, 16, 0.35);
+}
+
+.lg-btn-primary {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.lg-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -8px rgba(217, 123, 41, 0.55);
+}
+
+.lg-underline {
+  background-image: linear-gradient(var(--amber), var(--amber));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  transition: background-size 0.3s ease;
+}
+
+.lg-underline:hover {
+  background-size: 100% 2px;
+}
