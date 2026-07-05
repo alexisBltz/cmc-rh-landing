@@ -4,7 +4,7 @@ import { PricingCalculator } from "./PricingCalculator";
 import { useReveal } from "./useReveal";
 
 // Apunta esto a la URL donde esté desplegado Staff Harmony Hub (login del sistema).
-const APP_URL = "https://app.cmchumancore.pe/auth";
+const APP_URL = "https://cmcmin.vercel.app/";
 
 const TICKER_ITEMS = ["V · VACACIONES", "LF · LIBRE", "DM · DESCANSO MÉDICO", "LP · LICENCIA", "PERM · PERMISO", "ET · EN TRÁNSITO"];
 
