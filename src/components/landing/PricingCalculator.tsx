@@ -54,6 +54,16 @@ const PLANS: Plan[] = [
 const formatSoles = (n: number) =>
   new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN", maximumFractionDigits: 0 }).format(n);
 
+const WHATSAPP_NUMBER = "51936224203";
+
+const whatsappUrl = (plan: Plan, count: number) => {
+  const message =
+    plan.price > 0
+      ? `Hola, quiero cotizar el plan ${plan.name} de CMC HUMANCORE para ${count} colaboradores.`
+      : `Hola, quiero cotizar el plan Corporativo de CMC HUMANCORE.`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+};
+
 export function PricingCalculator() {
   const [count, setCount] = useState(80);
 
@@ -137,10 +147,12 @@ export function PricingCalculator() {
               ))}
             </ul>
 
-            <button
-              type="button"
+            <a
+              href={whatsappUrl(plan, count)}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => posthog.capture("pricing_plan_click", { plan: plan.code, colaboradores: count })}
-              className="lg-mono text-xs uppercase rounded-full px-5 py-3 text-center transition-colors"
+              className="block lg-mono text-xs uppercase rounded-full px-5 py-3 text-center transition-colors"
               style={
                 plan.highlight
                   ? { background: "var(--amber)", color: "var(--ink)" }
@@ -148,7 +160,7 @@ export function PricingCalculator() {
               }
             >
               {plan.price > 0 ? "Elegir plan" : "Hablar con ventas"}
-            </button>
+            </a>
           </div>
         ))}
       </div>
