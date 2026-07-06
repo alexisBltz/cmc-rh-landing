@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { posthog } from "../../lib/analytics";
 
 type Plan = {
   code: string;
@@ -80,6 +81,8 @@ export function PricingCalculator() {
           step={5}
           value={count}
           onChange={(e) => setCount(Number(e.target.value))}
+          onMouseUp={(e) => posthog.capture("pricing_slider_changed", { colaboradores: Number(e.currentTarget.value) })}
+          onTouchEnd={(e) => posthog.capture("pricing_slider_changed", { colaboradores: Number(e.currentTarget.value) })}
           className="w-full accent-[#d97b29]"
           aria-label="Número de colaboradores activos"
         />
@@ -136,6 +139,7 @@ export function PricingCalculator() {
 
             <button
               type="button"
+              onClick={() => posthog.capture("pricing_plan_click", { plan: plan.code, colaboradores: count })}
               className="lg-mono text-xs uppercase rounded-full px-5 py-3 text-center transition-colors"
               style={
                 plan.highlight

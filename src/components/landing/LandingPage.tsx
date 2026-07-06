@@ -2,6 +2,8 @@ import { ArrowRight, QrCode, Users, FileSignature, ShieldCheck } from "lucide-re
 import { RosterDemo } from "./RosterDemo";
 import { PricingCalculator } from "./PricingCalculator";
 import { useReveal } from "./useReveal";
+import { useScrollDepth } from "./useScrollDepth";
+import { posthog } from "../../lib/analytics";
 
 // Apunta esto a la URL donde esté desplegado Staff Harmony Hub (login del sistema).
 const APP_URL = "https://cmcmin.vercel.app/";
@@ -46,8 +48,8 @@ const STEPS = [
   { n: "04", title: "Garita valida al ingreso", desc: "Escanea el QR desde el celular y confirma la salida o el regreso al instante." },
 ];
 
-function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const { ref, visible } = useReveal<HTMLDivElement>();
+function Reveal({ children, className = "", trackSection }: { children: React.ReactNode; className?: string; trackSection?: string }) {
+  const { ref, visible } = useReveal<HTMLDivElement>(trackSection);
   return (
     <div ref={ref} className={`lg-reveal ${visible ? "is-visible" : ""} ${className}`}>
       {children}
@@ -55,7 +57,17 @@ function Reveal({ children, className = "" }: { children: React.ReactNode; class
   );
 }
 
+function trackCta(location: string, label: string) {
+  posthog.capture("cta_click", { location, label });
+}
+
+function trackNav(target: string) {
+  posthog.capture("nav_link_click", { target });
+}
+
 export function LandingPage() {
+  useScrollDepth();
+
   return (
     <div className="min-h-screen">
       {/* NAV */}
@@ -66,12 +78,13 @@ export function LandingPage() {
             <span className="lg-mono text-sm font-semibold tracking-tight">CMC HUMANCORE</span>
           </div>
           <nav className="hidden md:flex items-center gap-8 lg-mono text-xs uppercase">
-            <a href="#modulos" className="lg-underline">Módulos</a>
-            <a href="#como-funciona" className="lg-underline">Cómo funciona</a>
-            <a href="#precios" className="lg-underline">Precios</a>
+            <a href="#modulos" onClick={() => trackNav("modulos")} className="lg-underline">Módulos</a>
+            <a href="#como-funciona" onClick={() => trackNav("como-funciona")} className="lg-underline">Cómo funciona</a>
+            <a href="#precios" onClick={() => trackNav("precios")} className="lg-underline">Precios</a>
           </nav>
           <a
             href={APP_URL}
+            onClick={() => trackCta("nav", "Acceder")}
             className="lg-mono text-xs uppercase rounded-full px-4 py-2"
             style={{ background: "var(--ink)", color: "var(--chalk)" }}
           >
@@ -97,6 +110,7 @@ export function LandingPage() {
             <div className="flex flex-wrap gap-4 mb-10">
               <a
                 href={APP_URL}
+                onClick={() => trackCta("hero", "Acceder a la plataforma")}
                 className="lg-btn-primary group inline-flex items-center gap-2 lg-mono text-xs uppercase rounded-full px-6 py-3.5"
                 style={{ background: "var(--amber)", color: "var(--ink)" }}
               >
@@ -105,6 +119,7 @@ export function LandingPage() {
               </a>
               <a
                 href="#como-funciona"
+                onClick={() => trackNav("como-funciona")}
                 className="inline-flex items-center gap-2 lg-mono text-xs uppercase rounded-full px-6 py-3.5 border"
                 style={{ borderColor: "var(--line)" }}
               >
@@ -136,7 +151,7 @@ export function LandingPage() {
 
       {/* MODULES */}
       <section id="modulos" className="container mx-auto px-4 sm:px-6 py-20 sm:py-28">
-        <Reveal className="mb-14 max-w-xl">
+        <Reveal className="mb-14 max-w-xl" trackSection="modulos">
           <span className="lg-mono text-[0.65rem] uppercase text-[color:var(--ink-soft)]">Módulos</span>
           <h2 className="lg-display text-3xl sm:text-4xl font-bold tracking-tight mt-2">Cuatro tableros, un mismo sistema.</h2>
         </Reveal>
@@ -162,7 +177,7 @@ export function LandingPage() {
       {/* COMO FUNCIONA */}
       <section id="como-funciona" className="py-20 sm:py-28" style={{ background: "var(--ink)", color: "var(--chalk)" }}>
         <div className="container mx-auto px-4 sm:px-6">
-          <Reveal className="mb-14 max-w-xl">
+          <Reveal className="mb-14 max-w-xl" trackSection="como-funciona">
             <span className="lg-mono text-[0.65rem] uppercase opacity-60">Cómo funciona</span>
             <h2 className="lg-display text-3xl sm:text-4xl font-bold tracking-tight mt-2">De la solicitud a la garita, en cuatro pasos.</h2>
           </Reveal>
@@ -184,7 +199,7 @@ export function LandingPage() {
 
       {/* PRICING */}
       <section id="precios" className="container mx-auto px-4 sm:px-6 py-20 sm:py-28">
-        <Reveal className="mb-14 max-w-xl">
+        <Reveal className="mb-14 max-w-xl" trackSection="precios">
           <span className="lg-mono text-[0.65rem] uppercase text-[color:var(--ink-soft)]">Precios</span>
           <h2 className="lg-display text-3xl sm:text-4xl font-bold tracking-tight mt-2">Pagas por lo que usas.</h2>
           <p className="mt-3 text-[color:var(--ink-soft)]">
@@ -204,6 +219,7 @@ export function LandingPage() {
           </h2>
           <a
             href={APP_URL}
+            onClick={() => trackCta("final_cta", "Acceder a la plataforma")}
             className="lg-btn-primary inline-flex items-center gap-2 lg-mono text-xs uppercase rounded-full px-7 py-4"
             style={{ background: "var(--amber)", color: "var(--ink)" }}
           >

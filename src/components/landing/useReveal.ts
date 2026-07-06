@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { posthog } from "../../lib/analytics";
 
-export function useReveal<T extends HTMLElement>() {
+export function useReveal<T extends HTMLElement>(trackSection?: string) {
   const ref = useRef<T | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -12,6 +13,9 @@ export function useReveal<T extends HTMLElement>() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
+          if (trackSection) {
+            posthog.capture("section_viewed", { section: trackSection });
+          }
           observer.disconnect();
         }
       },
@@ -20,7 +24,7 @@ export function useReveal<T extends HTMLElement>() {
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [trackSection]);
 
   return { ref, visible };
 }
